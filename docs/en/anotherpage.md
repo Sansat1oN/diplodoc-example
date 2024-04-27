@@ -1,24 +1,46 @@
-# Simple documentation project with YFM
+    # Отправка уведомлений в Telegram сборщику заказов
+
+{% note info %}
+**Задача**: необходимо отправлять в telegram-канал сообщение о необходимости переместить заказ в зону выдачи -  главному сборщику (конкретного магазина).
+После того как клиент нажал на кнопку "Я около магазина" или после того, как клиент "отметился" в магазине. 
+{% endnote %}
+
+```plantuml
+@startuml
+
+participant Клиент
+participant Какой_то_топик
+participant LSP
+participant Orders
+participant Магазин
 
 
-## Project Structure
-Basic project contains few config files and pages with actual content. Both config files and markdown linked into the following structure:
+Клиент -> Клиент: Оформляет онлайн-заказ
+Клиент -> Клиент: Подходит к магазину
 
+alt Клиент нажал кнопку "Я около магазина"
+     Клиент -> Клиент: Нажимает кнопку \n"Я около магазина" \n (MobileApp)
+     LSP --> Какой_то_топик: Получает сообщение о \n том, что клиент около магазина
+     LSP -> Orders: Запрашивает информацию по заказу
+     LSP -> LSP: Проверяет в БД связь \nмагазин - главный сборщик
+     LSP -> Магазин: Отправляет сообщение главному сборщику магазина \nо необходимости\nпереместить заказ в зону выдачи
+     note right: Уведомление получено сборщиком. 
+     Магазин -> Клиент: Выдаёт заказ
+     deactivate Магазин
 
-```
-input-folder
-|-- .yfm (config file for whole project)
-|-- toc.yaml (table of content)
-|-- presets.yaml (presets for vairables)
-|-- index.yaml (index page)
-|-- pages (Content pages)
-    |-- faq.md
-    |-- how-to.md
-|-- _assets (directory with pictures)
-    |-- image1.png
-    |-- image2.png
-|-- _includes (directory for reusable content)
-    |-- faq_shared_block.md
+else Клиент не нажал кнопку "Я около магазина"
+    Клиент -> Клиент: Заходит в магазин
+    Клиент -> Клиент: Подходит к киоску\n и набирает свой номер телефона\n или заказа 
+    LSP --> Какой_то_топик: Получает сообщение о \n том, что клиент в магазине
+    LSP -> Orders: Запрашивает информацию по заказу
+    LSP -> LSP: Проверяет в БД связь \nмагазин - главный сборщик
+    LSP -> Магазин: Отправляет сообщение главному сборщику магазина \nо необходимости\nпереместить заказ в зону выдачи
+    note right: Уведомление получено сборщиком. 
+    Магазин -> Клиент: Выдаёт заказ
+    deactivate Магазин
+    end
+
+@enduml
 ```
 
 
